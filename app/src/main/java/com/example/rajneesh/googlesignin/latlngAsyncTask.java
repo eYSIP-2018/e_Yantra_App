@@ -17,15 +17,15 @@ public class latlngAsyncTask extends AsyncTask<ArrayList<String>,Void,ArrayList<
 
 
 
-    public interface latlngListner {
-        void onlatlngGet(ArrayList<LatLng> latLngs);
-    }
+//    public interface latlngListner {
+//        void onlatlngGet(ArrayList<LatLng> latLngs);
+//    }
 
-    private latlngListner listner;
+   // private latlngListner listner;
     private Context context;
 
-    public latlngAsyncTask(latlngListner listner, Context context) {
-        this.listner = listner;
+    public latlngAsyncTask( Context context) {
+        //this.listner = listner;
         this.context = context;
     }
 
