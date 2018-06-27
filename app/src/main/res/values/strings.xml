@@ -33,5 +33,8 @@
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_team">TeamActivity</string>
     <string name="api_key">AIzaSyBdRJvfHiRBEP93_zMXZx2z7FnOBy3lDn8</string>
+    <string name="title_activity_landpage">landpage</string>
+    <string name="title_activity_talk_videos">TalkVideosActivity</string>
+    <string name="title_activity_elsi">elsiActivity</string>
 
 </resources>
