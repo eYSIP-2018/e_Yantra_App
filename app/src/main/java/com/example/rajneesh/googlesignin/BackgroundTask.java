@@ -35,7 +35,7 @@ public class BackgroundTask extends AsyncTask<String,Void,String> {
         protected String doInBackground(String... strings)
         {
                 String regUrl = "http://ec2-35-154-66-115.ap-south-1.compute.amazonaws.com/register.php",
-                        signinUrl="http://ec2-35-154-66-115.ap-south-1.compute.amazonaws.com/signin.php",
+                        signinUrl="http://ec2-35-154-66-115.ap-south-1.compute.amazonaws.com/server/public/sign",
                         authUrl="http://ec2-35-154-66-115.ap-south-1.compute.amazonaws.com/login.php",
                 geturl="http://ec2-35-154-66-115.ap-south-1.compute.amazonaws.com/test_query.php", method = strings[0];
                 if (method.equals("signup"))

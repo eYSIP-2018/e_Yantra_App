@@ -36,5 +36,10 @@
     <string name="title_activity_landpage">landpage</string>
     <string name="title_activity_talk_videos">TalkVideosActivity</string>
     <string name="title_activity_elsi">elsiActivity</string>
+    <string name="title_activity_resources">ResourcesActivity</string>
+    <string name="title_activity_projects_eyrc">Projects_eyrcActivity</string>
+    <string name="title_activity_posts">PostsActivity</string>
+    <string name="title_activity_comment">CommentActivity</string>
+    <string name="title_activity_newsfeed">NewsfeedActivity</string>
 
 </resources>

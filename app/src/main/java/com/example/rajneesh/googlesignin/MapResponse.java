@@ -38,4 +38,8 @@ public class MapResponse {
     public void setClg_name(String clg_name) {
         this.clg_name = clg_name;
     }
+
+    public Double getlatfromclgname(String clg_name){
+        return this.lat;
+    }
 }
