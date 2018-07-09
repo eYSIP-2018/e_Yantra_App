@@ -15,13 +15,14 @@ class PostController extends Controller
 		$input->ID=$request->ID;
 		$input->username=$request->username;
 		$input->Post=$request->Post;
+		$input->photo=$request->photo;
 		$input->save();
 		$response->Response="Saved";
 		echo json_encode($response);
 	}
 	public function show()
 	{
-		$data=Post::all();
+		$data=Post::orderBy('ID','DESC')->get();
 		echo json_encode($data);
 	}
 	public function image(Request $request)
