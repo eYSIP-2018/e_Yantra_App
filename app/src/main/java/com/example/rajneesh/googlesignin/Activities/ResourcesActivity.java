@@ -42,10 +42,11 @@ public class ResourcesActivity extends AppCompatActivity {
     ListView downloadList;
     String[] values;
     String[] urls;
-    ArrayAdapter adapter;
+    ArrayAdapter<String> adapter;
+   //Adapter<String> adapter;
     VideoTutorialRecyclerAdapter videoAdapter;
     ArrayList<VideoTutorialResponse> videos;
-    RecyclerView recyclerView;
+    RecyclerView recyclerView,recyclerView1;
 
     DownloadManager dm;
     long queue_id;
@@ -57,6 +58,8 @@ public class ResourcesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_resources);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        downloadList= findViewById(R.id.downloadlist);
 
 
 
@@ -74,10 +77,13 @@ public class ResourcesActivity extends AppCompatActivity {
         });
 
 
-        downloadList= findViewById(R.id.downloadlist);
+    //    downloadList= findViewById(R.id.downloadlist);
         urls= new String[]{"https://drive.google.com/file/d/0Bw9Usvm00eZlLVVqdjAxdEM5TjA/view","https://drive.google.com/file/d/0Bw9Usvm00eZlVjNCdkM3YkswMjg/view","https://drive.google.com/file/d/1KPHsGkT8Y3u59Te1kzjqbRGjYMbappk_/view","https://drive.google.com/file/d/1C7BfSQMHAsjC2scVinslO9JxSWjmm5rQ/view"};
         values=new String[]{"Experimants on Firebird V (ATmega2560)","Datasheets And Manuals","AVRDude for Firebird V Robot","AVRDude for Spark V Robot"};
         adapter= new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,values);
+
+        //adapter= new RecyclerView.Adapter<String>(this,)
+
         recyclerView= findViewById(R.id.videotutlist);
         videos= new ArrayList<>();
 

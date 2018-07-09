@@ -4,34 +4,33 @@
     tools:showIn="navigation_view">
 
     <group android:checkableBehavior="single">
+
         <item
-            android:id="@+id/nav_Team"
-            android:icon="@drawable/ic_people_black_24dp"
-            android:title="Team" />
+            android:id="@+id/profile"
+            android:icon="@drawable/ic_person_black_24dp"
+            android:title="My Profile" />
         <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery" />
+            android:id="@+id/chatforum"
+            android:icon="@drawable/ic_chat_black_24dp"
+            android:title="Chat Forum" />
         <item
-            android:id="@+id/nav_contactus"
-            android:icon="@drawable/ic_phone_black_24dp"
-            android:title="Contact Us" />
+            android:id="@+id/TalksandVideos"
+            android:icon="@drawable/ic_video_library_black_24dp"
+            android:title="Talks and Videos" />
         <item
-            android:id="@+id/nav_faq"
-            android:icon="@drawable/ic_question_answer_black_24dp"
-            android:title="FAQ" />
+            android:id="@+id/elsi"
+            android:icon="@drawable/ic_computer_black_24dp"
+            android:title="eLSI Information" />
         <item
-            android:id="@+id/nav_publications"
-            android:icon="@drawable/ic_publish_black_24dp"
-            android:title="Publications" />
+            android:id="@+id/eyrdc"
+            android:icon="@drawable/ic_developer_board_black_24dp"
+            android:title="eYRDC Projects" />
+
         <item
-            android:id="@+id/nav_news"
-            android:icon="@drawable/ic_update_black_24dp"
-            android:title="News" />
-        <item
-            android:id="@+id/nav_logout"
-            android:icon="@drawable/ic_person_outline_black_24dp"
+            android:id="@+id/logout"
+            android:icon="@drawable/ic_power_settings_new_black_24dp"
             android:title="Logout" />
+
 
 
 

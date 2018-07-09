@@ -41,5 +41,15 @@
     <string name="title_activity_posts">PostsActivity</string>
     <string name="title_activity_comment">CommentActivity</string>
     <string name="title_activity_newsfeed">NewsfeedActivity</string>
+    <string name="title_activity_main3">Main3Activity</string>
+
+    <string-array name="choices_array">
+        <item>Faculty</item>
+        <item>Student</item>
+        <item>Professional</item>
+
+    </string-array>
+    <string name="title_activity_edit_profile">EditProfileActivity</string>
+    <string name="title_activity_profile">ProfileActivity</string>
 
 </resources>

@@ -7,13 +7,32 @@ import java.util.ArrayList;
 
 public class MapResponse {
 
-
-    @SerializedName("lat")
+    @SerializedName("id")
+    int id;
+    @SerializedName("latitude")
     Double lat;
-    @SerializedName("long")
+    @SerializedName("longitude")
     Double lng;
     @SerializedName("college")
     String clg_name;
+    @SerializedName("Grade")
+    String grade;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getGrade() {
+        return grade;
+    }
+
+    public void setGrade(String grade) {
+        this.grade = grade;
+    }
 
     public Double getLat() {
         return lat;

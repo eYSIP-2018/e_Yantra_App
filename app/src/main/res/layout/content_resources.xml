@@ -73,26 +73,24 @@
         <ListView
             android:id="@+id/downloadlist"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="275dp"
             android:layout_marginEnd="16dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="16dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView7"></ListView>
+            app:layout_constraintTop_toBottomOf="@+id/textView7" />
 
         <TextView
             android:id="@+id/textView"
             android:layout_width="wrap_content"
-            android:layout_height="22dp"
+            android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
             android:text="Software link"
             android:textColor="@color/blue"
             android:textSize="18dp"
@@ -101,9 +99,10 @@
             app:layout_constraintTop_toBottomOf="@+id/downloadlist" />
 
         <TextView
+            android:id="@+id/softwarelink"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/softwarelink"
+            android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
@@ -112,6 +111,7 @@
             android:clickable="true"
             android:focusable="true"
             android:text="Go to the Softwere Section from here..."
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.065"
             app:layout_constraintStart_toStartOf="parent"
