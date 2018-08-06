@@ -44,7 +44,8 @@ public class Projects_eyrcActivity extends AppCompatActivity {
 
 
         fetchVideos();
-        recyclerView.setLayoutManager(new GridLayoutManager(this,3));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+       // recyclerView.setLayoutManager(new GridLayoutManager(this,3));
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 

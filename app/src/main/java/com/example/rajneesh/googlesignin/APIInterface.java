@@ -20,8 +20,7 @@ public interface APIInterface {
     Call<Response> getResponse( @Field("username") String name, @Field("password") String pass);
     @GET("server/public/youtube")
     Call<List<YoutubeVideoResponse>> getVideos();
-    @GET("dummy/calender.php")
-    Call<List<CalenderResponse>> getEvents();
+
     @GET("server/public/tutorials")
     Call<List<VideoTutorialResponse>> getvideoTuts();
     @GET("server/public/projects")
@@ -77,18 +76,29 @@ public interface APIInterface {
     @FormUrlEncoded
     Call<ResponseBody> getpostcount(@Field("pid") int pid);
 
-    @POST("server/public/profile")
     @FormUrlEncoded
-    Call<Response> putprofile (@Field("Profile_Pic") String photo,@Field("name") String name,@Field("college") String college,@Field("email") String email,@Field("phone") String phone,@Field("job") String job,@Field("company") String company,@Field("year") String year,@Field("branch") String branch,@Field("type") String type);
+    @POST("server/public/profile")
+
+    Call<intResponse> putprofile (@Field("name") String name,@Field("college") String college,@Field("email") String email,@Field("phone") String phone,@Field("job") String job,@Field("company") String company,@Field("year") String year,@Field("branch") String branch,@Field("type") String type);
 
     @POST("server/public/profshow")
     @FormUrlEncoded
-    Call<List<ProfileResponse>> getprofile(@Field("unique") String uniqueid);
+    Call<List<ProfileResponse>> getprofile(@Field("unique") int uniqueid);
 
 
     @POST("server/public/newscount")
     @FormUrlEncoded
     Call<Response> getnewscomno(@Field("Fid") int id);
+
+    @POST("server/public/Calender")
+    @FormUrlEncoded
+    Call<List<CalendarResponse>> getCalendar(@Field("date") String date);
+
+    @POST("server/public/newsearch")
+    @FormUrlEncoded
+    Call<List<NewsFeedResponse>> getsearchnewsfeed(@Field("search") String search);
+
+
 
 }
 

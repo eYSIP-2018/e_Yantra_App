@@ -3,6 +3,7 @@ package com.example.rajneesh.googlesignin;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,18 +15,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.rajneesh.googlesignin.Activities.Main2Activity;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+
 public class NewsfeedRecyclerAdapter extends RecyclerView.Adapter<NewsfeedRecyclerAdapter.ViewHolder>{
 
     int height,width;
+    int id;
     String comno;
     public interface OnItemClickListner{
         void OnItemClicked(int position);
         void OnCommentSelected(int position);
-        String getid(int position);
+        int getid(int position);
 
     }
 
@@ -82,9 +88,34 @@ public class NewsfeedRecyclerAdapter extends RecyclerView.Adapter<NewsfeedRecycl
                 listner.OnCommentSelected(holder.getAdapterPosition());
             }
         });
-        comno= listner.getid(holder.getAdapterPosition());
+        id= listner.getid(holder.getAdapterPosition());
+        Call<Response> call= APIClient.getInstance().getApi().getnewscomno(id);
+        call.enqueue(new Callback<Response>() {
+            @Override
+            public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
+                try {
+                    Response response1 = response.body();
+                    comno = response1.getMessage();
+                    Log.d("comno in adapter", comno);
+                    holder.commentno.setText(comno);
+                }
+                catch (Exception e) {
+                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
 
-           holder.commentno.setText(comno);
+            }
+
+            @Override
+            public void onFailure(Call<Response> call, Throwable t) {
+                Toast.makeText(context, t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+
+
+        });
+//        Log.d("comno in adapter",comno);
+//        if(id){ holder.commentno.setText(0+"");}
+//        else{
+//           holder.commentno.setText(comno);}
 
         holder.feeddesc.setText(feed.getDesc());
         holder.title.setText(feed.getTitle());

@@ -1,6 +1,8 @@
 package com.example.rajneesh.googlesignin.Activities;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.app.Activity;
 import android.support.design.widget.FloatingActionButton;
@@ -24,7 +26,7 @@ import retrofit2.Response;
 public class ProfileActivity extends Activity {
 
     ImageView backimage,circleimage;
-    String uniqueid;
+    int uniqueid;
     TextView name,type, text_email,text_phone,text_college,text_company,text_year,text_branch,text_jobtitle;
     TextView email,phone,college,year,branch,company,jobtitle;
 
@@ -56,7 +58,7 @@ public class ProfileActivity extends Activity {
         Intent intent= getIntent();
         Bundle bundle= new Bundle();
         bundle= intent.getExtras();
-        uniqueid=bundle.getString("uniqueid");
+        uniqueid=bundle.getInt("uniqueid");
         Log.d("unique",uniqueid+"");
 
 
@@ -66,6 +68,7 @@ public class ProfileActivity extends Activity {
             public void onClick(View view) {
                 Intent intent1= new Intent(ProfileActivity.this,EditProfileActivity.class);
                 startActivity(intent1);
+                finish();
             }
         });
 
@@ -75,51 +78,54 @@ public class ProfileActivity extends Activity {
         call.enqueue(new Callback<List<ProfileResponse>>() {
             @Override
             public void onResponse(Call<List<ProfileResponse>> call, Response<List<ProfileResponse>> response) {
-                ProfileResponse response1= response.body().get(0);
-                name.setText(response1.getName());
-                email.setText(response1.getEmail());
-                phone.setText(response1.getPhone());
-                type.setText(response1.getType());
-                Glide.with(ProfileActivity.this).load(response1.getPhoto()).into(circleimage);
-                Glide.with(ProfileActivity.this).load(R.drawable.profback).into(backimage);
-                if(response1.getBranch()==null){
-                    branch.setVisibility(View.GONE);
-                    text_branch.setVisibility(View.GONE);
-                }
-                else {
-                    branch.setText(response1.getBranch());
-                }
+                try {
+                    ProfileResponse response1 = response.body().get(0);
+                    name.setText(response1.getName());
+                    email.setText(response1.getEmail());
+                    phone.setText(response1.getPhone());
+                    type.setText(response1.getType());
+                    SharedPreferences sharedPreferences= getSharedPreferences("googlesignin", Context.MODE_PRIVATE);
+                    String prophoto= sharedPreferences.getString("photo","");
+                    Glide.with(ProfileActivity.this).load(response1.getPhoto()).into(circleimage);
+                    Glide.with(ProfileActivity.this).load(prophoto).into(circleimage);
+                    Glide.with(ProfileActivity.this).load(R.drawable.profback).into(backimage);
+                    if (response1.getBranch() == null) {
+                        branch.setVisibility(View.GONE);
+                        text_branch.setVisibility(View.GONE);
+                    } else {
+                        branch.setText(response1.getBranch());
+                    }
 
-                if(response1.getCollege()==null){
-                    college.setVisibility(View.GONE);
-                    text_college.setVisibility(View.GONE);
-                }
-                else {
-                    college.setText(response1.getCollege());
-                }
+                    if (response1.getCollege() == null) {
+                        college.setVisibility(View.GONE);
+                        text_college.setVisibility(View.GONE);
+                    } else {
+                        college.setText(response1.getCollege());
+                    }
 
-                if(response1.getCompany()==null){
-                    company.setVisibility(View.GONE);
-                    text_company.setVisibility(View.GONE);
-                }
-                else {
-                    company.setText(response1.getCompany());
-                }
+                    if (response1.getCompany() == null) {
+                        company.setVisibility(View.GONE);
+                        text_company.setVisibility(View.GONE);
+                    } else {
+                        company.setText(response1.getCompany());
+                    }
 
-                if(response1.getYear()==null){
-                    year.setVisibility(View.GONE);
-                    text_year.setVisibility(View.GONE);
-                }
-                else {
-                    year.setText(response1.getYear());
-                }
+                    if (response1.getYear() == null) {
+                        year.setVisibility(View.GONE);
+                        text_year.setVisibility(View.GONE);
+                    } else {
+                        year.setText(response1.getYear());
+                    }
 
-                if(response1.getJobtitle()==null){
-                    jobtitle.setVisibility(View.GONE);
-                    text_jobtitle.setVisibility(View.GONE);
+                    if (response1.getJobtitle() == null) {
+                        jobtitle.setVisibility(View.GONE);
+                        text_jobtitle.setVisibility(View.GONE);
+                    } else {
+                        jobtitle.setText(response1.getYear());
+                    }
                 }
-                else {
-                    jobtitle.setText(response1.getYear());
+                catch (Exception e){
+                    Toast.makeText(ProfileActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
 
             }

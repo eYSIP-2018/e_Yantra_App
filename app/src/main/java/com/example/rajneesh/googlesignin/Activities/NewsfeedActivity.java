@@ -114,8 +114,8 @@ public class NewsfeedActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public String getid(int position) {
-                        return null;
+                    public int getid(int position) {
+                        return 0;
                     }
                 },getWindowManager());
                 recyclerView.setAdapter(adapter);

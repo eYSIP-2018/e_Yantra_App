@@ -1,15 +1,21 @@
 package com.example.rajneesh.googlesignin.Activities;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -24,10 +30,19 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.rajneesh.googlesignin.APIClient;
+import com.example.rajneesh.googlesignin.Manifest;
 import com.example.rajneesh.googlesignin.R;
 
-import java.io.IOException;
+import net.gotev.uploadservice.MultipartUploadRequest;
+import net.gotev.uploadservice.UploadNotificationConfig;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.UUID;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -46,6 +61,8 @@ public class EditProfileActivity extends AppCompatActivity {
     Intent intent1;
     Uri ImageUri;
     String str_name,str_email,str_photo;
+    final int STORAGE_PERMISSION_CODE= 123;
+    final String UPLOAD_URL="http://ec2-35-154-66-115.ap-south-1.compute.amazonaws.com/server/public/image";
 
 
     @Override
@@ -65,6 +82,7 @@ public class EditProfileActivity extends AppCompatActivity {
         branch= findViewById(R.id.branch);
         changephoto= findViewById(R.id.changephoto);
         profilephoto= findViewById(R.id.picture);
+        requestStoragePermission();
 
 
 
@@ -142,9 +160,13 @@ public class EditProfileActivity extends AppCompatActivity {
             public void onClick(View view) {
 
 
-
-
-                String propic= ImageUri.toString();
+                if(ImageUri!=null) {
+                    uploadImage();
+                    File file = new File(getPath(ImageUri));
+                    MultipartBody.Part filePart = MultipartBody.Part.createFormData("file", file.getName(), RequestBody.create(MediaType.parse("image/*"), file));
+                    Log.d("multipart", filePart + "");
+                    String propic = getPath(ImageUri);
+                }
                 String nm= name.getText().toString();
                 String clg = college.getText().toString();
                 String em= email.getText().toString();
@@ -154,23 +176,26 @@ public class EditProfileActivity extends AppCompatActivity {
                 String yr= year.getText().toString();
                 String bra= branch.getText().toString();
                 String type= dropdown.getSelectedItem().toString();
-                Call<com.example.rajneesh.googlesignin.Response> call= APIClient.getInstance().getApi().putprofile(propic,nm,clg,em,phn,jb,com,yr,bra,type);
-                call.enqueue(new Callback<com.example.rajneesh.googlesignin.Response>() {
+                Call<com.example.rajneesh.googlesignin.intResponse> call= APIClient.getInstance().getApi().putprofile(nm,clg,em,phn,jb,com,yr,bra,type);
+                call.enqueue(new Callback<com.example.rajneesh.googlesignin.intResponse>() {
                     @Override
-                    public void onResponse(Call<com.example.rajneesh.googlesignin.Response> call, Response<com.example.rajneesh.googlesignin.Response> response) {
-                        com.example.rajneesh.googlesignin.Response response1= response.body();
-                       String uniqueID=response1.getMessage();
-                        Log.d("unique edit",uniqueID);
-                        Intent intent2= new Intent(EditProfileActivity.this,ProfileActivity.class);
-                        Bundle bundle2= new Bundle();
-                        bundle2.putString("uniqueid",uniqueID);
-                        Toast.makeText(EditProfileActivity.this, uniqueID, Toast.LENGTH_SHORT).show();
-                        intent2.putExtras(bundle2);
+                    public void onResponse(Call<com.example.rajneesh.googlesignin.intResponse> call, Response<com.example.rajneesh.googlesignin.intResponse> response) {
+                        com.example.rajneesh.googlesignin.intResponse response1 = response.body();
+                        try {
+                            int uniqueID = response1.getMessage();
+                            Log.d("unique edit", uniqueID + "");
+                            Intent intent2 = new Intent(EditProfileActivity.this, ProfileActivity.class);
+                            Bundle bundle2 = new Bundle();
+                            bundle2.putInt("uniqueid", uniqueID);
+                            Toast.makeText(EditProfileActivity.this, uniqueID + "", Toast.LENGTH_SHORT).show();
+                            intent2.putExtras(bundle2);
 
 
-
-                        startActivity(intent2);
-
+                            startActivity(intent2);
+                            finish();
+                        } catch (Exception e) {
+                            Toast.makeText(EditProfileActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
                         // bundle1.putString("uniqueid",uniqueID)
                         //intent1.putExtras(bundle1);
 
@@ -178,7 +203,7 @@ public class EditProfileActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onFailure(Call<com.example.rajneesh.googlesignin.Response> call, Throwable t) {
+                    public void onFailure(Call<com.example.rajneesh.googlesignin.intResponse> call, Throwable t) {
                         Toast.makeText(EditProfileActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -237,8 +262,8 @@ public class EditProfileActivity extends AppCompatActivity {
             ImageUri= data.getData();
 
             try {
-                Toast.makeText(this, ImageUri+"", Toast.LENGTH_SHORT).show();
-
+             //   Toast.makeText(this, ImageUri+"", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getPath(ImageUri), Toast.LENGTH_SHORT).show();
                 bitmap= MediaStore.Images.Media.getBitmap(getContentResolver(),ImageUri);
                // profilephoto.setImageURI(ImageUri);
                 Glide.with(this).load(ImageUri).into(profilephoto);
@@ -248,4 +273,63 @@ public class EditProfileActivity extends AppCompatActivity {
             }
         }
     }
+
+    private String getPath(Uri uri){
+        Cursor cursor= getContentResolver().query(uri,null,null,null,null);
+        cursor.moveToFirst();
+        String document_id= cursor.getString(0);
+        document_id = document_id.substring(document_id.lastIndexOf(":")+1);
+        cursor.close();
+
+        cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,null,MediaStore.Images.Media._ID+"=?", new String[]{document_id},null);
+        cursor.moveToFirst();
+        String path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+        cursor.close();
+        Log.d("path",path);
+        return path;
+    }
+
+
+
+    private void uploadImage(){
+        String path = getPath(ImageUri);
+
+
+        try{
+            String uploadid= UUID.randomUUID().toString();
+            new MultipartUploadRequest(this,uploadid,UPLOAD_URL)
+                    .addFileToUpload(path,"image")
+                    .setNotificationConfig(new UploadNotificationConfig())
+                    .setMaxRetries(2)
+                    .startUpload();
+        }
+        catch( Exception e){
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+
+        }
+    }
+
+    private void requestStoragePermission(){
+        if(ContextCompat.checkSelfPermission(this,android.Manifest.permission.READ_EXTERNAL_STORAGE)== PackageManager.PERMISSION_GRANTED)
+            return;
+        ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},STORAGE_PERMISSION_CODE);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if(requestCode==STORAGE_PERMISSION_CODE){
+            if(grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
+                Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
+            }
+            else{
+                Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+
 }
+
+
+
+

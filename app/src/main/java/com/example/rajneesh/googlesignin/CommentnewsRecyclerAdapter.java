@@ -84,7 +84,7 @@ public class CommentnewsRecyclerAdapter extends RecyclerView.Adapter<Commentnews
 
     @Override
     public int getItemCount() {
-        return comments.size();
+        return (comments.size()!=0)?comments.size():0;
     }
 
     class ViewHolder extends RecyclerView.ViewHolder{

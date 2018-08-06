@@ -1,6 +1,11 @@
 package com.example.rajneesh.googlesignin.Activities;
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,6 +14,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -37,16 +43,20 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.rajneesh.googlesignin.APIClient;
+import com.example.rajneesh.googlesignin.Helper;
 import com.example.rajneesh.googlesignin.NewsFeedResponse;
+import com.example.rajneesh.googlesignin.NewsfeedFragment;
 import com.example.rajneesh.googlesignin.NewsfeedRecyclerAdapter;
 import com.example.rajneesh.googlesignin.R;
 import com.example.rajneesh.googlesignin.Response;
+import com.example.rajneesh.googlesignin.newsfeedSearchResult;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -54,6 +64,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.squareup.picasso.Picasso;
 
 import java.security.MessageDigest;
@@ -79,6 +90,8 @@ public class Main2Activity extends AppCompatActivity
 
     TextView comment, username;
     String comno;
+    String strfragment;
+    MaterialSearchView searchView;
     GoogleSignInClient googleSignInClient;
     EditText title;
     GoogleSignInAccount account;
@@ -86,12 +99,11 @@ public class Main2Activity extends AppCompatActivity
     TextView upload;
     View view1, view2;
     String optionselected,nm,em,ph;
-    RecyclerView recyclerView;
-    int id;
+
+
     EditText feedtext;
     SharedPreferences sharedPreferences1;
-    ArrayList<NewsFeedResponse> feeds;
-    NewsfeedRecyclerAdapter adapter;
+
     LayoutInflater inflater;
 
 
@@ -103,6 +115,57 @@ public class Main2Activity extends AppCompatActivity
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("NewsFeed");
         inflater = this.getLayoutInflater();
+     //   FragmentManager fragmentManager= getFragmentManager();
+
+//        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//        fragmentTransaction.replace(R.id.container, newsfeedFragment);
+//        fragmentTransaction.addToBackStack(null);
+//        fragmentTransaction.commit();
+
+        searchView= findViewById(R.id.search_view);
+
+
+        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Bundle bundle= new Bundle();
+                bundle.putString("searchstring",query);
+                newsfeedSearchResult newsfeedsearchresult= new newsfeedSearchResult();
+                newsfeedsearchresult.setArguments(bundle);
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.container,newsfeedsearchresult).addToBackStack(null)
+                        .commit();
+
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
+
+
+
+
+//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+//
+//            NotificationManager mNotificationManager=(NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+//            NotificationChannel mChannel=new NotificationChannel(Helper.CHANNEL_ID,Helper.CHANNEL_NAME,NotificationManager.IMPORTANCE_HIGH);
+//
+//            mChannel.setDescription(Helper.CHANNEL_DESCRPTION);
+//            mChannel.enableLights(true);
+//            mChannel.setLightColor(Color.RED);
+//            mChannel.shouldVibrate();
+//            mChannel.setVibrationPattern(new long[]{100,200,300,400});
+//
+//            mNotificationManager.createNotificationChannel(mChannel);
+//        }
+
+
+
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
@@ -113,8 +176,7 @@ public class Main2Activity extends AppCompatActivity
 
 
         username = findViewById(R.id.username);
-        recyclerView = findViewById(R.id.feedlist);
-        feeds = new ArrayList<>();
+
 
 
         SharedPreferences sharedPreferences = getSharedPreferences("googlesignin", Context.MODE_PRIVATE);
@@ -125,10 +187,7 @@ public class Main2Activity extends AppCompatActivity
         final String checking = sharedPreferences1.getString("optionSelected", "null");
 
 
-        fetchfeeds();
-        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
+
 
 
 //        elsi= findViewById(R.id.elsi);
@@ -255,6 +314,16 @@ public class Main2Activity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main2, menu);
+        MenuItem item= menu.findItem(R.id.action_search);
+        searchView.setMenuItem(item);
+//        item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+//            @Override
+//            public boolean onMenuItemClick(MenuItem menuItem) {
+//                searchView.setVisibility(View.VISIBLE);
+//                return true;
+//            }
+//        });
+
         return true;
     }
 
@@ -266,6 +335,7 @@ public class Main2Activity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.chatforum) {
+            strfragment="Chat Forum";
             Intent intent = new Intent(this, PostsActivity.class);
             startActivity(intent);
 
@@ -304,6 +374,20 @@ public class Main2Activity extends AppCompatActivity
             startActivity(intent);
         }
 
+        else if (id== R.id.calendar){
+            Intent intent= new Intent(this,CalenderActivity.class);
+            startActivity(intent);
+        }
+
+        else if(id==R.id.newsfeed){
+            strfragment= "newsfeed";
+            NewsfeedFragment newsfeedFragment= new NewsfeedFragment();
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.container,newsfeedFragment).addToBackStack(null)
+                    .commit();
+        }
+
 
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
@@ -311,64 +395,53 @@ public class Main2Activity extends AppCompatActivity
         }
 
 
-        private void fetchfeeds () {
-            retrofit2.Call<List<NewsFeedResponse>> call = APIClient.getInstance().getApi().getfeeds();
-            call.enqueue(new Callback<List<NewsFeedResponse>>() {
-                @Override
-                public void onResponse(retrofit2.Call<List<NewsFeedResponse>> call, retrofit2.Response<List<NewsFeedResponse>> response) {
-                    feeds = (ArrayList) response.body();
-                    adapter = new NewsfeedRecyclerAdapter(Main2Activity.this, feeds, new NewsfeedRecyclerAdapter.OnItemClickListner() {
-                        @Override
-                        public void OnItemClicked(int position) {
-                            // Toast.makeText(Main2Activity.this, "clicked", Toast.LENGTH_SHORT).show();
-                        }
-
-                        @Override
-                        public void OnCommentSelected(int position) {
-                            Intent intent = new Intent(Main2Activity.this, CommentActivity.class);
-                            int id = feeds.get(position).getNewsid();
-                            Bundle bundle = new Bundle();
-                            bundle.putInt("id", id);
-                            bundle.putString("token", "newsfeed");
-                            intent.putExtras(bundle);
-                            startActivity(intent);
-                        }
-
-                        @Override
-                        public String getid(int position) {
-                            int id= feeds.get(position).getNewsid();
-
-                            Call<Response> call= APIClient.getInstance().getApi().getnewscomno(id);
-                            call.enqueue(new Callback<Response>() {
-                                @Override
-                                public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
-                                    Response response1= response.body();
-                                     comno= response1.getMessage();
-
-                                }
-
-                                @Override
-                                public void onFailure(Call<Response> call, Throwable t) {
-                                    Toast.makeText(Main2Activity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                            return comno;
-                        }
-
-
-                    }, getWindowManager());
-                    recyclerView.setAdapter(adapter);
-                    adapter.notifyDataSetChanged();
-
-                }
-
-                @Override
-                public void onFailure(retrofit2.Call<List<NewsFeedResponse>> call, Throwable t) {
-                    Toast.makeText(Main2Activity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
-
-        }
+//        private void fetchfeeds () {
+//            retrofit2.Call<List<NewsFeedResponse>> call = APIClient.getInstance().getApi().getfeeds();
+//            call.enqueue(new Callback<List<NewsFeedResponse>>() {
+//                @Override
+//                public void onResponse(retrofit2.Call<List<NewsFeedResponse>> call, retrofit2.Response<List<NewsFeedResponse>> response) {
+//                    feeds = (ArrayList) response.body();
+//                    adapter = new NewsfeedRecyclerAdapter(Main2Activity.this, feeds, new NewsfeedRecyclerAdapter.OnItemClickListner() {
+//                        @Override
+//                        public void OnItemClicked(int position) {
+//                            // Toast.makeText(Main2Activity.this, "clicked", Toast.LENGTH_SHORT).show();
+//                        }
+//
+//                        @Override
+//                        public void OnCommentSelected(int position) {
+//                            Intent intent = new Intent(Main2Activity.this, CommentActivity.class);
+//                            int id = feeds.get(position).getNewsid();
+//                            Bundle bundle = new Bundle();
+//                            bundle.putInt("id", id);
+//                            bundle.putString("token", "newsfeed");
+//                            intent.putExtras(bundle);
+//                            startActivity(intent);
+//                        }
+//
+//                        @Override
+//                        public int getid(int position) {
+//                            return id= feeds.get(position).getNewsid();
+//
+//
+////                            Log.d("comno Main2",comno);
+////                            return comno;
+////
+//                        }
+//
+//
+//                    }, getWindowManager());
+//                    recyclerView.setAdapter(adapter);
+//                    adapter.notifyDataSetChanged();
+//
+//                }
+//
+//                @Override
+//                public void onFailure(retrofit2.Call<List<NewsFeedResponse>> call, Throwable t) {
+//                    Toast.makeText(Main2Activity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+//                }
+//            });
+//
+//        }
 
 
         public void display_form () {
@@ -426,6 +499,14 @@ public class Main2Activity extends AppCompatActivity
             }).show();
         }
 
-
+    @Override
+    protected void onStart() {
+        super.onStart();
+        NewsfeedFragment newsfeedFragment= new NewsfeedFragment();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container,newsfeedFragment).addToBackStack(null)
+                .commit();
     }
+}
 
